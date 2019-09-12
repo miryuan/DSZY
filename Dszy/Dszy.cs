@@ -95,11 +95,11 @@ namespace Dszy
             {
                 try
                 {
-                    sb.AppendLine(p.MainWindowTitle);
+                    sb.AppendLine(p.ProcessName + "\t=========>\t" + p.MainModule.FileName);
                 }
                 catch (Exception e)
                 {
-                    sb.AppendLine(p.ProcessName + "=========>" + e.Message);
+                    sb.AppendLine("遇到错误\t=========>\t" + p.MainModule.FileName);
                 }
             }
 

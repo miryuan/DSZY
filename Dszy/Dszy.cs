@@ -103,34 +103,6 @@ namespace Dszy
                 }
             }
 
-
-
-            //sb.Append("<table border=\"1\">");
-            //sb.Append("<tr>");
-            //sb.Append("<th> pName </th>");
-            //sb.Append("<th> pID </th>");
-            //sb.Append("<th> pFilePath </th>");
-            //sb.Append("</tr>");
-
-            //sb.Append("<tr>");
-            //sb.Append("<td colspan=\"3\">" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "</td>");
-            //sb.Append("</tr>");
-
-            //foreach (Process p in myProcess)
-            //{
-            //    try
-            //    {
-            //        ProcessModule m = p.MainModule;
-            //        sb.Append("<tr>");
-            //        sb.Append("<td>" + p.ProcessName + "</td>");
-            //        sb.Append("<td>" + p.Id + "</td>");
-            //        sb.Append("<td>" + m.FileName + "</td>");
-            //        sb.Append("</tr>");
-            //    }
-            //    catch { };
-
-            //}
-            //sb.Append("</table>");
             return sb.ToString();
         }
 

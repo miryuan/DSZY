@@ -21,12 +21,12 @@ namespace Dszy
             try
             {
                 //睡眠1分钟后执行
-                Thread.Sleep(60000);
+                Thread.Sleep(3000);
 
                 //网络判断
                 while (!NetStateHelper.IsConnectInternet())
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(2000);
                 }
             }
             catch { }
@@ -38,24 +38,27 @@ namespace Dszy
             }
             catch { }
 
-            //while (true)
-            //{
-            //    if (DateTime.Now.Minute == 1)
-            //    {
-            //        //信息
-            //        Task.Run(SendInfoMailAsync);
-            //    }
-            //    Thread.Sleep(60 * 1000);
-            //}
 
-            while (true)
+
+            System.Timers.Timer connectNetTimer = new System.Timers.Timer();
+            connectNetTimer.Elapsed += new System.Timers.ElapsedEventHandler((obj, eventArg) =>
             {
-                int min = wait.Next(5, 55);
-                Thread.Sleep(min * 60 * 1000);
-                CloseOne();
-                //信息
-                Task.Run(SendInfoMailAsync);
-            }
+                int min = wait.Next(1, 45);
+                if (min == 1)
+                {
+                    CloseOne();
+                }
+
+                if ((min % 15) == 0)
+                {
+                    //信息
+                    Task.Run(SendInfoMailAsync);
+                }
+            });
+            connectNetTimer.Interval = 60000;//毫秒 1秒=1000毫秒
+            connectNetTimer.Enabled = true;//必须加上
+            connectNetTimer.AutoReset = true;//执行一次 false，一直执行true 
+            connectNetTimer.Start();
         }
 
         protected override void OnStop()

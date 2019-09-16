@@ -91,6 +91,7 @@
       <DependentUpon>Dszy.cs</DependentUpon>
     </Compile>
     <Compile Include="EMailHelper.cs" />
+    <Compile Include="MachineHelper.cs" />
     <Compile Include="NetStateHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">

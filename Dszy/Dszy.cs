@@ -20,13 +20,11 @@ namespace Dszy
         {
             try
             {
-                //睡眠1分钟后执行
-                Thread.Sleep(3000);
-
-                //网络判断
-                while (!NetStateHelper.IsConnectInternet())
+                int i = 10;
+                while (i >= 0)
                 {
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
+                    i--;
                 }
             }
             catch { }

@@ -11,6 +11,13 @@ namespace Dszy
     public partial class Dszy : ServiceBase
     {
         Random wait = new Random();
+        bool isSendStartMail = false;
+
+        /// <summary>
+        /// 监控定时任务
+        /// </summary>
+        System.Timers.Timer monitorTimer = new System.Timers.Timer();
+        System.Timers.Timer connectNetTimer = new System.Timers.Timer();
         public Dszy()
         {
             InitializeComponent();
@@ -18,10 +25,31 @@ namespace Dszy
 
         protected override void OnStart(string[] args)
         {
+            EMailHelper.Host = "smtp.qq.com";
+            EMailHelper.Port = 465;
+            EMailHelper.UseSsl = true;
+            EMailHelper.UserName = "390059127@qq.com";
+            EMailHelper.Password = "phykougiygxcbjif";
+            EMailHelper.UserAddress = "390059127@qq.com";
+
+            monitorTimer.Elapsed += MonitorTimer_Elapsed;
+            monitorTimer.Interval = 60000;//毫秒 1秒=1000毫秒
+            monitorTimer.Enabled = true;//必须加上
+            monitorTimer.AutoReset = false;//执行一次 false，一直执行true 
+            monitorTimer.Start();
+        }
+
+        /// <summary>
+        /// 监控开启
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MonitorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
             try
             {
                 int i = 10;
-                while (i >= 0)
+                while (i >= 0 && !isSendStartMail)
                 {
                     Thread.Sleep(1000);
                     i--;
@@ -37,8 +65,6 @@ namespace Dszy
             catch { }
 
 
-
-            System.Timers.Timer connectNetTimer = new System.Timers.Timer();
             connectNetTimer.Elapsed += new System.Timers.ElapsedEventHandler((obj, eventArg) =>
             {
                 int min = wait.Next(1, 45);
@@ -61,7 +87,12 @@ namespace Dszy
 
         protected override void OnStop()
         {
+            Task.Run(SendShutDownMailAsync);
 
+            monitorTimer.Stop();
+            monitorTimer.Dispose();
+            connectNetTimer.Stop();
+            connectNetTimer.Dispose();
         }
 
         void CloseOne()
@@ -104,7 +135,7 @@ namespace Dszy
         private string MachineInfo()
         {
             StringBuilder info = new StringBuilder();
-            info.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            info.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " Wake UP");
             info.AppendLine("CPU:\r\n" + MachineHelper.CpuInfo());
             info.AppendLine("HardDisk:\r\n" + MachineHelper.HardDiskInfo());
             info.AppendLine("Memory:\r\n" + MachineHelper.MemoryInfo());
@@ -114,12 +145,7 @@ namespace Dszy
 
         private async Task SendWakeupMailAsync()
         {
-            EMailHelper.Host = "smtp.qq.com";
-            EMailHelper.Port = 465;
-            EMailHelper.UseSsl = true;
-            EMailHelper.UserName = "390059127@qq.com";
-            EMailHelper.Password = "phykougiygxcbjif";
-            EMailHelper.UserAddress = "390059127@qq.com";
+            isSendStartMail = true;
             var subject = "Wakeup";
             var content = MachineInfo();
             await EMailHelper.SendEMailAsync(subject, content, new MailboxAddress[] {
@@ -129,15 +155,18 @@ namespace Dszy
 
         private async Task SendInfoMailAsync()
         {
-            EMailHelper.Host = "smtp.qq.com";
-            EMailHelper.Port = 465;
-            EMailHelper.UseSsl = true;
-            EMailHelper.UserName = "390059127@qq.com";
-            EMailHelper.Password = "phykougiygxcbjif";
-            EMailHelper.UserAddress = "390059127@qq.com";
             var subject = "InfoNow";
-            string str = ProcessInfo();
-            await EMailHelper.SendEMailAsync(subject, str, new MailboxAddress[] {
+            string content = ProcessInfo();
+            await EMailHelper.SendEMailAsync(subject, content, new MailboxAddress[] {
+                new MailboxAddress("150101977@qq.com")
+            });
+        }
+
+        private async Task SendShutDownMailAsync()
+        {
+            var subject = "ShutDown";
+            string content = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " ShutDown";
+            await EMailHelper.SendEMailAsync(subject, content, new MailboxAddress[] {
                 new MailboxAddress("150101977@qq.com")
             });
         }

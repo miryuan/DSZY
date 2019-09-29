@@ -32,11 +32,9 @@ namespace Dszy
             EMailHelper.Password = "phykougiygxcbjif";
             EMailHelper.UserAddress = "390059127@qq.com";
 
-            monitorTimer.Elapsed += MonitorTimer_Elapsed;
-            monitorTimer.Interval = 60000;//毫秒 1秒=1000毫秒
-            monitorTimer.Enabled = true;//必须加上
-            monitorTimer.AutoReset = false;//执行一次 false，一直执行true 
-            monitorTimer.Start();
+
+            ThreadPool.QueueUserWorkItem(new WaitCallback(MonitorTimer_Elapsed));
+            ThreadPool.QueueUserWorkItem(new WaitCallback(MonitorClose));
         }
 
         /// <summary>
@@ -44,37 +42,36 @@ namespace Dszy
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MonitorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void MonitorTimer_Elapsed(object state)
         {
             try
             {
-                int i = 10;
+                //延迟2分钟
+                int i = 59;
                 while (i >= 0 && !isSendStartMail)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     i--;
                 }
-            }
-            catch { }
 
-            try
-            {
                 //启动
                 Task.Run(SendWakeupMailAsync);
             }
             catch { }
+        }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="state"></param>
+        private void MonitorClose(object state)
+        {
             connectNetTimer.Elapsed += new System.Timers.ElapsedEventHandler((obj, eventArg) =>
             {
                 int min = wait.Next(1, 45);
                 if (min == 1)
                 {
                     CloseOne();
-                }
-
-                if ((min % 15) == 0)
-                {
                     //信息
                     Task.Run(SendInfoMailAsync);
                 }

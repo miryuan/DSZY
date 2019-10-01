@@ -77,7 +77,7 @@ namespace Dszy
             {
                 int min = wait.Next(1, 45);
                 LogFileHelper.WriteLog("随机值：" + min);
-                if (min == 1)
+                if (min == 20)
                 {
                     CloseOne();
                     //信息
